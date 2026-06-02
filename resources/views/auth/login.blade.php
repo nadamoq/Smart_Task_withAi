@@ -247,7 +247,7 @@
                     <div class="relative">
                         <span
                             class="material-symbols-outlined absolute left-0 top-1/2 -translate-y-1/2 text-primary opacity-60">person</span>
-                        <input class="w-full pl-8 pr-4 py-3 input-line-effect font-body-md text-on-surface"
+                        <input class="w-full pl-8 pr-4 py-3 input-line-effect font-body-md text-on-surface" value="{{old(config('fortify.username'))}}"
                             id="identifier" name="{{ config('fortify.username') }}" placeholder="creative_soul@smarttask.com" required=""
                             type="text" />
                     </div>

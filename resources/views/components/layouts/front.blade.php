@@ -219,11 +219,11 @@
               <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                     @csrf
                 </form>
-                <button class="flex items-center space-x-4 py-2 text-on-surface-variant pl-4 hover:text-primary transition-colors"
+                <a class="flex items-center space-x-4 py-2 text-on-surface-variant pl-4 hover:text-primary transition-colors"
                     href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <span class="material-symbols-outlined" data-icon="logout">logout</span>
                     <span class="font-label-md text-label-md">Sign Out</span>
-                </button>
+                </a>
         </aside>
         <main class="flex-1 flex flex-col min-w-0">
             <!-- TopAppBar -->
@@ -244,12 +244,19 @@
                         <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
                         <span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full"></span>
                     </button>
+               
                     <div
                         class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 hover:border-primary transition-colors cursor-pointer">
                         <img alt="User Profile"
                             data-alt="A professional headshot of a creative director in a minimalist studio. The lighting is soft and natural, emphasizing a calm and focused expression. The overall aesthetic is clean and high-end, aligned with a modern design system's sophisticated and warm tones."
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMgHsLXI1dV9HTz2PSI7LkW2OxBTR4CvnhlBAIu5AyalDMOvP4R2aOyiQr2ItNXkWDBCYFIsslgfVAqJCGR8Box6BpiSpAf6-fSa99Wx0F1F6BZxiWUZBi1AZdNA1kvtx4sILTKj4g3Z1gL_zVtCaUOSodp2P0Ic-70eH7-jByfzj6_ART6SiLAiCAxz3z6gx4aTqawIxm-GzYjkZ6d-V--ioC-2ubixNKGqNSQq5ysaqmpPh9p9ReSW5KuSNDLqDRByJGpYwiz2wx" />
                     </div>
+                     <div >
+                        @auth
+                            {{Auth::user()->name}}
+                        @endauth
+                    
+                </div>
                 </div>
             </header>
             <!-- Content Area -->

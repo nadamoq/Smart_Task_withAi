@@ -23,11 +23,11 @@ class TaskController extends Controller
         if ($filter) {
             $tasks = $tasks->where('categories_id', $filter);
         }
-        $count=$tasks->count();
+        $count = $tasks->count();
         $tasks = $tasks->latest()->get();
-        
+
         $categories = Category::all();
-        return view('tasks.index',compact('tasks', 'filter','count', 'categories'));
+        return view('tasks.index', compact('tasks', 'filter', 'count', 'categories'));
     }
 
     /**
@@ -37,7 +37,7 @@ class TaskController extends Controller
     {
         //
         $categories = Category::all();
-        return view('tasks.create',['task'=>new Task(), 'categories' => $categories]);
+        return view('tasks.create', ['task' => new Task(), 'categories' => $categories]);
     }
 
     /**
@@ -58,6 +58,7 @@ class TaskController extends Controller
     public function show(Task $task)
     {
         //
+       
         return view('tasks.show', compact('task'));
     }
 
@@ -67,6 +68,7 @@ class TaskController extends Controller
     public function edit(Task $task)
     {
         //
+      
         $categories = Category::all();
         return view('tasks.edit', compact('task', 'categories'));
     }
@@ -77,13 +79,19 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task, FileUpload $fileUpload)
     {
         $data = $request->validated();
-        $data['attachment'] = $fileUpload->upload('attachment', 'tasks/attachments', 'public');
-        
+
+        if($request->hasFile('attachment')){
+
+            $data['attachment'] = $fileUpload->upload('attachment', 'tasks/attachments', 'public');
+
+        }
         $updated = $task->update($data);
-        if ($updated && $data['attachment']) {
-            
+        
+        if ($updated && $task->wasChanged('attachment') ) {
+
             Storage::disk('public')->delete($task->getOriginal('attachment'));
         }
+
 
         return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
     }
@@ -98,11 +106,16 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
     }
     public function complete(Task $task)
-{
-    $task->update([
-        'status' => 'completed'
-    ]);
+    {
 
-    return back();
-}
+        
+        if ($task->status === 'completed') {
+            return back()->with('info', 'Task is already completed.');
+        }
+        $task->update([
+            'status' => 'completed'
+        ]);
+
+        return back();
+    }
 }

@@ -1,66 +1,75 @@
 <x-layouts.front title="My Tasks">
     <!-- Header & Filters -->
-                <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                    <div>
-                        <h2 class="font-display text-headline-lg text-on-surface mb-2">Workspace Tasks</h2>
-                        <p class="font-body-md text-on-surface-variant">Managing {{$count}} active task{{$count!=1?'s':''}}</p>
-                    </div>
-                    <div class="flex flex-wrap gap-2">
-                        
-                            @foreach ($categories as $category)
-                                <a href="{{ route('tasks.index', ['filter' => $category['id']]) }}"
-                                    class="px-6 py-2 rounded-full @if( $filter && $filter == $category['id']) bg-primary text-on-primary @else
-                                         bg-surface-container-highest text-on-surface-variant
-                                    @endif font-label-md hover:bg-surface-variant transition-all">
-                                    {{ ucfirst($category['name']) }}
-                                </a>
-                            @endforeach
-                       
-                        </div>
-                </section>
+    <section class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div>
+            <h2 class="font-display text-headline-lg text-on-surface mb-2">Workspace Tasks</h2>
+            <p class="font-body-md text-on-surface-variant">Managing {{ $count??0 }} active
+                task{{ $count != 1 ? 's' : '' }}</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+
+            @foreach ($categories as $category)
+                <a href="{{ route('tasks.index', ['filter' => $category['id']]) }}"
+                    class="px-6 py-2 rounded-full @if ($filter && $filter == $category['id']) bg-primary text-on-primary @else
+                                         bg-surface-container-highest text-on-surface-variant @endif font-label-md hover:bg-surface-variant transition-all">
+                    {{ ucfirst($category['name']) }}
+                </a>
+            @endforeach
+
+        </div>
+    </section>
     <!-- Task List (Main Content) -->
+    <div class="space-y-3">
+        @if (session('success'))
+            <div class="bg-green-100 text-green-800 px-4 py-2 rounded-md font-label-sm text-sm">
+                {{ session('success') }}
+            </div>
+        @endif
+    </div>
     <div class="col-span-12 lg:col-span-8 space-y-4">
         <!-- Task Item -->
-        @foreach ($tasks as $task)   
-        <div
-            class="group relative bg-surface-container-lowest border border-outline/8 p-6 rounded-xl hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex items-center gap-6">
-            <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl"></div>
-            <input
-                class="spring-checkbox w-6 h-6 rounded border-2 border-outline-variant text-primary focus:ring-primary cursor-pointer transition-all"
-                type="checkbox" />
-            <div class="flex-1">
-                <h3
-                    class="font-headline-md text-body-lg text-on-surface group-hover:text-primary transition-colors">
-                   {{$task->title}}</h3>
-                <div class="flex items-center gap-4 mt-2">
-                    <span class="flex items-center gap-1 text-label-sm text-on-surface-variant">
-                        <span class="material-symbols-outlined text-[18px]"
-                            data-icon="calendar_today">calendar_today</span>
-                        {{date('M j, Y', strtotime($task->due_date))}}
-                    </span>
-                    <span
-                        class="px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm">High
-                        Priority</span>
-                    <span
-                        class="px-3 py-1 rounded-full bg-primary-fixed-dim/20 text-primary text-label-sm">
-                    {{$task->status}}</span>
+        @foreach ($tasks as $task)
+            <div
+                class="group relative bg-surface-container-lowest border border-outline/8 p-6 rounded-xl hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 flex items-center gap-6">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl"></div>
+                <input  @checked($task->priority == App\Enums\Priority::HIGH)
+                    class="spring-checkbox w-6 h-6 rounded border-2 border-outline-variant text-primary focus:ring-primary cursor-pointer transition-all"
+                    type="checkbox" />
+                <div class="flex-1">
+                    <a href="{{ route('tasks.show', $task->id) }}">
+                        <h3
+                            class="@if($task->status->value=='completed') font-headline-md text-body-lg text-on-surface line-through @else font-headline-md text-body-lg text-on-surface group-hover:text-primary transition-colors @endif">
+                            {{ $task->title }}</h3>
+                    </a>
+                    <div class="flex items-center gap-4 mt-2">
+                        <span class="flex items-center gap-1 text-label-sm text-on-surface-variant">
+                            <span class="material-symbols-outlined text-[18px]"
+                                data-icon="calendar_today">calendar_today</span>
+                            {{ date('M j, Y', strtotime($task->due_date)) }}
+                        </span>
+                        <span
+                            class="px-3 py-1 rounded-full {{ $task->priority->color() }} text-label-sm">
+                            {{ ucfirst($task->priority->value) }} Priority</span>
+                        <span class="px-3 py-1 rounded-full {{ $task->status->color() }} text-label-sm">
+                            {{ ucfirst($task->status->value) }}</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-2">
+                    <a href="{{ route('tasks.edit', $task) }}"
+                        class="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface text-label-sm font-medium hover:bg-surface-variant transition-all">
+                        Edit
+                    </a>
+                    <form action="{{ route('tasks.destroy', $task) }}" method="POST"
+                        onsubmit="return confirm('Delete this task?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="px-4 py-2 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm font-medium hover:bg-secondary-fixed/90 transition-all">
+                            Delete
+                        </button>
+                    </form>
                 </div>
             </div>
-            <div class="flex flex-col items-end gap-2">
-                <a href="{{ route('tasks.edit', $task) }}"
-                    class="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface text-label-sm font-medium hover:bg-surface-variant transition-all">
-                    Edit
-                </a>
-                <form action="{{ route('tasks.destroy', $task) }}" method="POST" onsubmit="return confirm('Delete this task?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                        class="px-4 py-2 rounded-full bg-secondary-fixed text-on-secondary-fixed text-label-sm font-medium hover:bg-secondary-fixed/90 transition-all">
-                        Delete
-                    </button>
-                </form>
-            </div>
-        </div>
         @endforeach
         <!-- Task Item -->
         <div
@@ -70,8 +79,7 @@
                 class="spring-checkbox w-6 h-6 rounded border-2 border-outline-variant text-primary focus:ring-primary cursor-pointer transition-all"
                 type="checkbox" />
             <div class="flex-1">
-                <h3
-                    class="font-headline-md text-body-lg text-on-surface group-hover:text-primary transition-colors">
+                <h3 class="font-headline-md text-body-lg text-on-surface group-hover:text-primary transition-colors">
                     Homepage Illustration Series</h3>
                 <div class="flex items-center gap-4 mt-2">
                     <span class="flex items-center gap-1 text-label-sm text-on-surface-variant">
@@ -108,8 +116,7 @@
                             data-icon="calendar_today">calendar_today</span>
                         Completed
                     </span>
-                    <span
-                        class="px-3 py-1 rounded-full bg-surface-variant text-on-surface-variant text-label-sm">Low
+                    <span class="px-3 py-1 rounded-full bg-surface-variant text-on-surface-variant text-label-sm">Low
                         Priority</span>
                 </div>
             </div>
@@ -121,8 +128,7 @@
         <div class="bg-surface-container-lowest border border-outline/8 p-gutter rounded-xl">
             <div class="flex justify-between items-center mb-6">
                 <h4 class="font-headline-md text-label-md text-on-surface">Sprint Velocity</h4>
-                <span class="material-symbols-outlined text-primary"
-                    data-icon="trending_up">trending_up</span>
+                <span class="material-symbols-outlined text-primary" data-icon="trending_up">trending_up</span>
             </div>
             <div class="flex items-end gap-2 h-32 mb-4">
                 <div
@@ -131,8 +137,7 @@
                 <div
                     class="flex-1 bg-primary-fixed-dim/30 rounded-t-lg h-[65%] transition-all hover:h-[70%] cursor-pointer">
                 </div>
-                <div
-                    class="flex-1 bg-primary rounded-t-lg h-[85%] transition-all hover:h-[90%] cursor-pointer">
+                <div class="flex-1 bg-primary rounded-t-lg h-[85%] transition-all hover:h-[90%] cursor-pointer">
                 </div>
                 <div
                     class="flex-1 bg-primary-fixed-dim/30 rounded-t-lg h-[55%] transition-all hover:h-[60%] cursor-pointer">
@@ -147,8 +152,7 @@
             </div>
         </div>
         <!-- Collaborators -->
-        <div
-            class="bg-surface-container-lowest border border-outline/8 p-gutter rounded-xl relative overflow-hidden">
+        <div class="bg-surface-container-lowest border border-outline/8 p-gutter rounded-xl relative overflow-hidden">
             <div class="absolute right-0 top-0 w-16 h-16 bg-secondary-container/10 rounded-bl-full">
             </div>
             <h4 class="font-headline-md text-label-md text-on-surface mb-6">Active Collaborators</h4>
@@ -189,13 +193,11 @@
                 Team Directory</button>
         </div>
         <!-- Creative Accent Card -->
-        <div
-            class="bg-primary-container p-gutter rounded-xl text-on-primary-container relative overflow-hidden group">
+        <div class="bg-primary-container p-gutter rounded-xl text-on-primary-container relative overflow-hidden group">
             <div
                 class="absolute -right-4 -bottom-4 w-32 h-32 bg-on-primary-container/10 rounded-full transition-transform group-hover:scale-125 duration-700">
             </div>
-            <span class="material-symbols-outlined text-4xl mb-4 block"
-                data-icon="auto_awesome">auto_awesome</span>
+            <span class="material-symbols-outlined text-4xl mb-4 block" data-icon="auto_awesome">auto_awesome</span>
             <h5 class="font-headline-md text-label-md mb-2">Artistic Insight</h5>
             <p class="text-label-sm opacity-90 leading-relaxed mb-4">Your creative output is 15% higher
                 in the morning sessions. Try scheduling complex design tasks before 11 AM.</p>

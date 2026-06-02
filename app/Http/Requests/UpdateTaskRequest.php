@@ -12,7 +12,7 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->id === $this->task->user_id;
     }
 
     /**
@@ -23,10 +23,9 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
+            'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
-            'due_date' => 'nullable|date',
-            
+            'due_date' => 'nullable|date',      
             'categories_id' => 'nullable|exists:categories,id',
             'priority' => 'nullable|in:low,med,high',
             'attachment' => 'nullable|file|mimes:jpeg,jpg,png,gif,webp,pdf,doc,docx,xls,xlsx,txt,zip|max:10240',

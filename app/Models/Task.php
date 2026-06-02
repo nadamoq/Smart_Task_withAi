@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\Priority;
+use App\Enums\Status;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Task extends Model
 {
@@ -18,6 +22,13 @@ class Task extends Model
         'priority',
     ];
 
+    protected function casts(): array
+{
+    return [
+        'priority' => Priority::class,
+        'status'=>Status::class
+    ];
+}
     /**
      * Cast attributes to native types.
      */
@@ -28,5 +39,20 @@ class Task extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function scopeUser($query){
+
+        return $query->where('user_id', auth()->user()->id);
+    }
+    protected static function booted(){
+
+     static::addGlobalScope('user',function (Builder $query) {
+        $query->where('user_id',Auth::user()->id);
+
+     });
     }
 }

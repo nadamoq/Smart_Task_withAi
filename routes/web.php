@@ -10,8 +10,13 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/dashboard', function () {
     return view('tasks.index');
+
 })->middleware(['auth'])->name('dashboard');
 
-Route::resource('tasks', TaskController::class);
-Route::get('/', function () {   return view('components.layouts.front'); })->name('welcome');
-Route::put('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+Route::prefix('dashboard')->middleware(['auth'])->group(function () {
+    
+    Route::resource('/tasks', TaskController::class);
+
+    Route::put('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+
+});

@@ -53,6 +53,7 @@
                                     accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip"
                                     class="sr-only" />
                             </label>
+                         
                             @php
                                
                                 $attachmentName = $task->attachment ? basename($task->attachment) : null;

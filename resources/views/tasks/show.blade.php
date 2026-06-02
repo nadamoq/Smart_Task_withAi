@@ -2,7 +2,7 @@
 
     <!-- Breadcrumbs -->
     <div class="flex items-center space-x-2 mb-8 font-label-md text-label-md text-on-surface-variant">
-        <span class="hover:text-primary cursor-pointer">Tasks</span>
+        <a href="{{ route('tasks.index') }}"> <span class="hover:text-primary cursor-pointer">Tasks</span></a>
         <span class="material-symbols-outlined text-[16px]" data-icon="chevron_right">chevron_right</span>
         <span class="text-on-surface font-bold">{{ $task->title }}</span>
     </div>
@@ -11,34 +11,48 @@
         <div class="max-w-3xl">
             <div class="flex flex-wrap items-center gap-4 mb-4">
                 <span
-                    class="px-4 py-1 rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[14px]" data-icon="sync">sync</span>
-                        {{ ucfirst($task->status) }}
+                    class="px-4 py-1 rounded-full {{ $task->status->color() }} font-label-sm text-label-sm flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]" data-icon="{{$task->status->icons()}}">{{$task->status->icons()}}</span>
+                    {{ ucfirst($task->status->value) }}
                 </span>
                 <span
-                    class="px-4 py-1 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[14px]" data-icon="priority_high">priority_high</span>
-                    {{ ucfirst($task->priority)}}Priority
+                    class="px-4 py-1 rounded-full {{ $task->priority->color() }} font-label-sm text-label-sm flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]" data-icon="{{$task->priority->icons()}}">{{$task->priority->icons()}}</span>
+                    {{ ucfirst($task->priority->value) }}Priority
                 </span>
             </div>
             <h2 class="font-display text-display text-on-surface leading-tight">{{ $task->title }}</h2>
         </div>
+
         <div class="flex gap-4">
             <a href="{{ route('tasks.edit', $task) }}"
                 class="bg-surface-container-high text-primary px-6 py-3 rounded-xl font-bold font-label-md border-2 border-primary hover:bg-primary hover:text-on-primary transition-all flex items-center gap-2 shadow-sm">
                 <span class="material-symbols-outlined" data-icon="edit">edit</span>
                 Edit Task
             </a>
-            <form id="EditForm" action="{{ route('tasks.complete', $task) }}" method="POST" class="hidden">
-                @csrf
-                @method('PUT')
-            </form>
-            <button onclick="document.getElementById('EditForm').submit()"
-                class="bg-primary text-on-primary px-6 py-3 rounded-xl font-bold font-label-md hover:bg-surface-tint transition-all flex items-center gap-2 shadow-sm">
-                <span class="material-symbols-outlined" data-icon="done_all">done_all</span>
-                Complete
-            </button>
+
+            @if ($task->status->value !== 'completed')
+                <form id="EditForm" action="{{ route('tasks.complete', $task) }}" method="POST" class="hidden">
+                    @csrf
+                    @method('PUT')
+                </form>
+
+                <button onclick="document.getElementById('EditForm').submit()"
+                    class="bg-primary text-on-primary px-6 py-3 rounded-xl font-bold font-label-md hover:bg-surface-tint transition-all flex items-center gap-2 shadow-sm">
+                    <span class="material-symbols-outlined" data-icon="done_all">done_all</span>
+                    Complete
+                </button>
+            @endif
+
         </div>
+
+    </div>
+    <div class="space-y-3">
+        @if (session('info'))
+            <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-md font-label-sm text-sm">
+                {{ session('info') }}
+            </div>
+        @endif
     </div>
     <!-- Layout Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
@@ -48,7 +62,8 @@
             <section
                 class="bg-surface-container-lowest p-8 rounded-xl border border-on-background/5 artistic-accent-teal shadow-sm">
                 <h3 class="font-headline-md text-headline-md mb-6 flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary" data-icon="description">{{ $task->description }}</span>
+                    <span class="material-symbols-outlined text-primary"
+                        data-icon="description"></span>
                     Creative Brief
                 </h3>
                 <div class="font-body-lg text-body-lg text-on-surface-variant space-y-4 leading-relaxed">
@@ -60,14 +75,24 @@
             </section>
             <!-- Assets Grid -->
             <section>
+
+                <div class="space-y-3">
+                    @if (session('files'))
+                        <div class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-md font-label-sm text-sm">
+                            {{ session('files') }}
+                        </div>
+                    @endif
+                </div>
+
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="font-headline-md text-headline-md flex items-center gap-3">
                         <span class="material-symbols-outlined text-tertiary" data-icon="attachment">attachment</span>
                         Creative Assets
                     </h3>
-                    <button class="text-primary font-label-md flex items-center gap-1 hover:underline">
+                    <button onclick="document.getElementById('EditForm').submit()"
+                        class="text-primary font-label-md flex items-center gap-1 hover:underline">
                         <span class="material-symbols-outlined" data-icon="upload">upload</span>
-                        Add New
+                        Save Assets
                     </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -84,36 +109,35 @@
                                     data-icon="zoom_in">zoom_in</span>
                             </div>
                         </div>
-                        <p class="font-label-md text-label-md text-on-surface mb-1">Color_Theory_V2.pdf</p>
+                        <p class="font-label-md text-label-md text-on-surface mb-1">{{ $task->attachment_name }}</p>
                         <p class="text-[12px] text-on-surface-variant">2.4 MB • Oct 12, 2023</p>
                     </div>
-                    <!-- Asset Card 2 -->
-                    <div class="group cursor-pointer">
-                        <div
-                            class="relative aspect-video rounded-xl overflow-hidden mb-3 border border-on-background/10 bg-surface-container-high transition-transform group-hover:scale-[1.02]">
-                            <img class="w-full h-full object-cover"
-                                data-alt="A detailed digital sketch showing an abstract geometric logo refinement process. The artwork features delicate white lines and golden amber accents on a dark navy blue background. The style is precise and architectural, suggesting high-end creative productivity. Minimalist shapes and fluid curves intersect to create a sophisticated brand mark."
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQJkIMALBwPqO0gkLqKkSrM45glCPkpsbKsVi1klD4gLqnO82S6TXCLF76Qd7IxOF8ozlQPhGF4_FzRP_fD0GxYMpiMolSFdrXi9O_Xs_3e9NQCSO8AfA5hlz4ZpNI3osLlw_NEZxxmorDRDi5105oJ3FwEv7UPKJodoo9fAL7csTwgOYb9vJxVL1_rOFsNVR7G_rZ4lOzhTkUewGa2IGyD0Rz2E6l53kngzfmc_a5hvsNKK1C1lOrWY3XiVD00SlemobCjQO8HbuF" />
-                            <div
-                                class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <span class="material-symbols-outlined text-white text-4xl"
-                                    data-icon="zoom_in">zoom_in</span>
-                            </div>
-                        </div>
-                        <p class="font-label-md text-label-md text-on-surface mb-1">Logo_Refinement.fig</p>
-                        <p class="text-[12px] text-on-surface-variant">14.8 MB • Oct 14, 2023</p>
-                    </div>
+                   
                     <!-- Asset Card 3 -->
-                    <div class="group cursor-pointer">
-                        <div
-                            class="flex items-center justify-center aspect-video rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low hover:bg-surface-container-high transition-colors">
-                            <span class="material-symbols-outlined text-outline text-4xl"
-                                data-icon="add_circle">add_circle</span>
-                        </div>
-                        <p class="font-label-md text-label-md text-on-surface-variant mt-3 text-center">Add
-                            more assets</p>
-                    </div>
+                    <form id="EditForm" action="{{ route('tasks.update', $task) }}" method="POST"
+                        enctype="multipart/form-data">
+                        @csrf
+                        @method('PUT')
+                        <label for="attachment">
+                            <div class="group cursor-pointer">
+
+                                <div
+                                    class="flex items-center justify-center aspect-video rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low hover:bg-surface-container-high transition-colors">
+                                    <span class="material-symbols-outlined text-outline text-4xl"
+                                        data-icon="add_circle">add_circle</span>
+                                </div>
+
+                                <p class="font-label-md text-label-md text-on-surface-variant mt-3 text-center">Add
+                                    more assets</p>
+
+                            </div>
+                        </label>
+                        <input id="attachment" name="attachment" type="file"
+                            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" class="hidden" />
+
+                    </form>
                 </div>
+
             </section>
             <!-- Subtasks -->
             <section

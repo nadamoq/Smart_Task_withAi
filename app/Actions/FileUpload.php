@@ -14,9 +14,10 @@ class FileUpload
         
         if($this->request->hasFile($file)) {
             $file = $this->request->file($file);
+            $file_name=random_int(0,999999).$file->getClientOriginalName();
         } else {
             return null; 
         }
-        return $file->store($path, $disk);
+        return $file->storeAs($path,$file_name, $disk);
     }
 }
