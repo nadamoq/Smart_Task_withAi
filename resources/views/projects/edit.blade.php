@@ -1,0 +1,1 @@
+@include('projects.form',["action"=>route('projects.update',$project),"project"=>$project ])

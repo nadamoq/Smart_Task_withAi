@@ -21,6 +21,7 @@
                     @endif
                     <form method="POST" action="{{$action}}" class="space-y-10 relative z-10"enctype="multipart/form-data">
                         @csrf
+            <input type="hidden" name="project_id" value="{{ request('project_id') ?? ($task->project_id ?? '') }}">
                         @method($method??'POST')
                         
                         <!-- Task Title Section -->

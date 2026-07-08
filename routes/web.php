@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\AiController;
+use App\Http\Controllers\AiTaskController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskAiController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,7 +20,14 @@ Route::get('/dashboard', function () {
 Route::prefix('dashboard')->middleware(['auth'])->group(function () {
     
     Route::resource('/tasks', TaskController::class);
-
+    Route::resource('projects', ProjectController::class);
     Route::put('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
+    
+    Route::prefix('ai')->group(function () {
+        Route::get('/', [TaskAiController::class, 'index'])->name('ai.index');
+        Route::post('/breakdown', [TaskAiController::class, 'breakdown'])->name('ai.breakdown');
+        Route::post('/backlog', [AiTaskController::class, 'backlog'])->name('ai.backlog');
+        Route::post('/save-tasks', [AiTaskController::class, 'importTasks'])->name('ai.save-tasks');
+    });
 
 });

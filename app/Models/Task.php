@@ -19,6 +19,7 @@ class Task extends Model
         'user_id',
         'attachment',
         'categories_id',
+        'project_id',
         'priority',
     ];
 
@@ -40,6 +41,10 @@ class Task extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -54,5 +59,13 @@ class Task extends Model
         $query->where('user_id',Auth::user()->id);
 
      });
+    }
+    public function sprint()
+    {
+        return $this->belongsTo(Sprint::class);
+    }
+    public function acceptanceCriteria()
+    {
+        return $this->hasMany(AcceptanceCriterion::class);
     }
 }

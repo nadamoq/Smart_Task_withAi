@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>SmartTask | {{$title??""}}</title>
+    <title>SmartTask | {{ $title ?? '' }}</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
@@ -182,48 +182,70 @@
                 <p class="font-label-md text-label-md text-on-surface-variant">Creative Workspace</p>
             </div>
             <nav class="flex flex-col gap-2">
-                <a class="flex items-center gap-4 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-variant/30 transition-all duration-300"
-                    href="#">
-                    <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
-                    <span class="font-label-md text-label-md">Dashboard</span>
-                </a>
-                <a class="flex items-center gap-4 bg-secondary-container text-on-secondary-container rounded-xl px-4 py-3 font-bold border-l-4 border-secondary transition-all duration-300"
-                    href="{{route('tasks.index')}}">
-                    <span class="material-symbols-outlined" data-icon="assignment_turned_in">assignment_turned_in</span>
+                <a class="flex items-center gap-4 transition-all duration-300
+    {{ request()->routeIs('tasks.*')
+        ? 'bg-secondary-container text-on-secondary-container font-bold border-l-4 border-secondary rounded-xl px-4 py-3'
+        : 'text-on-surface-variant hover:bg-surface-variant/30 rounded-xl px-4 py-3' }}"
+                    href="{{ route('tasks.index') }}">
+                    <span class="material-symbols-outlined">assignment_turned_in</span>
                     <span class="font-label-md text-label-md">Tasks</span>
                 </a>
-                <a class="flex items-center gap-4 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-variant/30 transition-all duration-300"
-                    href="#">
-                    <span class="material-symbols-outlined" data-icon="event">event</span>
-                    <span class="font-label-md text-label-md">Calendar</span>
-                </a>
-                <a class="flex items-center gap-4 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-variant/30 transition-all duration-300"
-                    href="#">
-                    <span class="material-symbols-outlined" data-icon="folder_shared">folder_shared</span>
+
+                <a class="flex items-center gap-4 transition-all duration-300
+    {{ request()->routeIs('projects.*')
+        ? 'bg-secondary-container text-on-secondary-container font-bold border-l-4 border-secondary rounded-xl px-4 py-3'
+        : 'text-on-surface-variant hover:bg-surface-variant/30 rounded-xl px-4 py-3' }}"
+                    href="{{ route('projects.index') }}">
+                    <span class="material-symbols-outlined">folder_shared</span>
                     <span class="font-label-md text-label-md">Projects</span>
+                </a>
+
+                <a class="flex items-center gap-4 {{ request()->routeIs('ai.*') ? 'bg-primary-fixed text-on-primary-fixed-variant rounded-xl px-4 py-3 font-bold border-l-4 border-primary' : 'text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-variant/30' }} transition-all duration-300"
+                    href="{{ route('ai.index') }}">
+                    <span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+                    <span class="font-label-md text-label-md">AI Studio</span>
                 </a>
                 <a class="flex items-center gap-4 text-on-surface-variant px-4 py-3 rounded-xl hover:bg-surface-variant/30 transition-all duration-300"
                     href="#">
                     <span class="material-symbols-outlined" data-icon="person">person</span>
                     <span class="font-label-md text-label-md">Profile</span>
                 </a>
-              
+
             </nav>
+            <div class="mt-4">
+                <h2 class="font-label-md text-label-md text-on-surface-variant mb-2">Recent Projects</h2>
+                @if ($recentProjects)
+
+
+                    <ul class="space-y-1">
+                        @foreach ($recentProjects as $proj)
+                            <li>
+                                <a href="{{ route('projects.show', $proj) ?? '#' }}"
+                                    class="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+                                    <span class="material-symbols-outlined" data-icon="folder">folder</span>
+                                    <span class="font-label-sm">{{ $proj->title }}</span>
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
             <div class="mt-auto p-4">
-                <a  href="{{route('tasks.create')}}"
+                <a href="{{ route('tasks.create') }}"
                     class="w-full bg-primary text-on-primary py-4 rounded-xl font-headline-md text-label-md flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all duration-300 shadow-lg shadow-primary/20">
                     <span class="material-symbols-outlined" data-icon="add">add</span>
                     New Task
-            </a>
-            </div>
-              <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                    @csrf
-                </form>
-                <a class="flex items-center space-x-4 py-2 text-on-surface-variant pl-4 hover:text-primary transition-colors"
-                    href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <span class="material-symbols-outlined" data-icon="logout">logout</span>
-                    <span class="font-label-md text-label-md">Sign Out</span>
                 </a>
+            </div>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+            <a class="flex items-center space-x-4 py-2 text-on-surface-variant pl-4 hover:text-primary transition-colors"
+                href="{{ route('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <span class="material-symbols-outlined" data-icon="logout">logout</span>
+                <span class="font-label-md text-label-md">Sign Out</span>
+            </a>
         </aside>
         <main class="flex-1 flex flex-col min-w-0">
             <!-- TopAppBar -->
@@ -244,32 +266,32 @@
                         <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
                         <span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full"></span>
                     </button>
-               
+
                     <div
                         class="h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 hover:border-primary transition-colors cursor-pointer">
                         <img alt="User Profile"
                             data-alt="A professional headshot of a creative director in a minimalist studio. The lighting is soft and natural, emphasizing a calm and focused expression. The overall aesthetic is clean and high-end, aligned with a modern design system's sophisticated and warm tones."
                             src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMgHsLXI1dV9HTz2PSI7LkW2OxBTR4CvnhlBAIu5AyalDMOvP4R2aOyiQr2ItNXkWDBCYFIsslgfVAqJCGR8Box6BpiSpAf6-fSa99Wx0F1F6BZxiWUZBi1AZdNA1kvtx4sILTKj4g3Z1gL_zVtCaUOSodp2P0Ic-70eH7-jByfzj6_ART6SiLAiCAxz3z6gx4aTqawIxm-GzYjkZ6d-V--ioC-2ubixNKGqNSQq5ysaqmpPh9p9ReSW5KuSNDLqDRByJGpYwiz2wx" />
                     </div>
-                     <div >
+                    <div>
                         @auth
-                            {{Auth::user()->name}}
+                            {{ Auth::user()->name }}
                         @endauth
-                    
-                </div>
+
+                    </div>
                 </div>
             </header>
             <!-- Content Area -->
             <div class="p-margin-desktop space-y-gutter overflow-y-auto">
-                
-                
-                    {{ $slot }}
-                    
+
+
+                {{ $slot }}
+
             </div>
         </main>
     </div>
     <!-- Mobile Navigation (BottomNavBar) -->
-    
+
     <script>
         // Simple micro-interaction for task items
         document.querySelectorAll('.group').forEach(item => {

@@ -185,15 +185,16 @@
                                 data-icon="calendar_today">calendar_today</span>
                             Due Date
                         </span>
-                        <span class="font-bold text-on-surface">Oct 28, 2023</span>
+                        <span class="font-bold text-on-surface">{{ date('M j, Y', strtotime($task->due_date)) }}</span>
                     </div>
+
                     <div class="flex items-center justify-between">
                         <span class="flex items-center gap-2 text-on-surface-variant font-label-md">
                             <span class="material-symbols-outlined text-[18px]"
                                 data-icon="folder_open">folder_open</span>
                             Project
                         </span>
-                        <span class="font-bold text-primary">Internal Rebrand</span>
+                        <span class="font-bold text-primary">{{$task->project?->title??'public project'}}</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="flex items-center gap-2 text-on-surface-variant font-label-md">
@@ -228,7 +229,7 @@
                                 </div>
                             </div>
                             <div>
-                                <p class="font-label-md text-label-md font-bold">Alex Miller</p>
+                                <p class="font-label-md text-label-md font-bold">{{$task->user->name}}</p>
                                 <p class="text-[12px] text-on-surface-variant">Art Director</p>
                             </div>
                         </div>
