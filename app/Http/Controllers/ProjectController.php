@@ -16,7 +16,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::with('tasks')->paginate(10);
+        $projects = Project::with('tasks')->withCount('sprints')->paginate(10);
         return view('projects.index', compact('projects'));
     }
 
@@ -50,6 +50,13 @@ class ProjectController extends Controller
     {
         $project->load('tasks');
         return view('projects.show', compact('project'));
+    }
+
+    public function sprints(Project $project)
+    {
+        $project->load(['sprints.tasks.acceptanceCriteria']);
+
+        return view('projects.sprints', compact('project'));
     }
 
     /**

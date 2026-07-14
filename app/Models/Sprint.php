@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Sprint extends Model
 {
     //
+    protected $guarded = [];
     public function project()  {
+
          return $this->belongsTo(Project::class);
     }
     public function tasks()

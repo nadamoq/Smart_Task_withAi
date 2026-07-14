@@ -9,7 +9,7 @@ class AcceptanceCriterion extends Model
     //
     protected $fillable = [
         'task_id',
-        'criterion',
+        'criteria',
     ];
     public function task()
     {

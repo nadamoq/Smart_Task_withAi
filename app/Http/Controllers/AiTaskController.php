@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Ai\Agents\TaskAgent;
 use App\Models\Category;
-use App\Models\Project;
-use App\Models\Task;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 use Illuminate\Support\Facades\Log;
-use Laravel\Ai\Ai;
-use Laravel\Ai\Enums\Lab;
+
 
 class AiTaskController extends Controller
 {
@@ -66,7 +63,7 @@ class AiTaskController extends Controller
 
         try {
             // نعود لأسلوب الحزمة الأصلي المعتمد لديكِ
-            $response = \App\Ai\Agents\AgileBacklogAgent::make()->prompt("Create exactly {$sprintCount} sprints for: " . $idea);
+            $response = AgileBacklogAgent::make()->prompt("Create exactly {$sprintCount} sprints for: " . $idea);
 
             $backlog = $response->toArray();
 

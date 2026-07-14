@@ -20,6 +20,7 @@ class Task extends Model
         'attachment',
         'categories_id',
         'project_id',
+        'sprint_id',
         'priority',
     ];
 

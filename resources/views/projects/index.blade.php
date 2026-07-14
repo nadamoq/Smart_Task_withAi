@@ -22,7 +22,10 @@
                             <td class="px-4 py-2 text-on-surface">{{ $project->title }}</td>
                             <td class="px-4 py-2 text-on-surface-variant">{{ $project->summary }}</td>
                             <td class="px-4 py-2 text-on-surface-variant">
-                                <a href="{{ route('projects.show', $project) }}" class="text-primary hover:underline">View Tasks ({{ $project->tasks->count() }})</a>
+                                <a href="{{ route('projects.show', $project) }}" class="text-primary hover:underline">Tasks ({{ $project->tasks->count() }})</a>
+                                @if($project->sprints_count)
+                                    · <a href="{{ route('projects.sprints', $project) }}" class="text-primary hover:underline">Sprints</a>
+                                @endif
                             </td>
                             <td class="px-4 py-2 text-right">
                                 <a href="{{ route('projects.edit', $project) }}" class="text-primary mr-2">Edit</a>

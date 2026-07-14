@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             //
-            $table->foreignId('categories_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->enum('priority',['low','med','high'])->default('med');
             
         });
